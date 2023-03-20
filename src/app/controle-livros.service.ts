@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
 import { Livro } from './Livro';
 
 @Injectable({
@@ -9,47 +10,55 @@ export class ControleLivrosService {
     {
       codigo: 1,
       codEditora: 1,
-      titulo: 'Harry Potter e a pedra filosofal',
-      resumo: 'Harry Potter é um garoto órfão que vive infeliz com seus tios, os Dursleys. Ele recebe uma carta contendo um convite para ingressar em Hogwarts, uma famosa escola especializada em formar jovens bruxos. Inicialmente, Harry é impedido de ler a carta por seu tio, mas logo recebe a visita de Hagrid, o guarda-caça de Hogwarts, que chega para levá-lo até a escola. Harry adentra um mundo mágico que jamais imaginara, vivendo diversas aventuras com seus novos amigos, Rony Weasley e Hermione Granger.',
-      autores: ['J.K. Rowling'],
+      titulo: 'O Código Da Vinci (2003)',
+      resumo: 'Quando um curador do museu do Louvre é assassinado, Langdon se vê envolvido em uma complexa trama cheia de enigmas que o leva a desvendar um dos principais segredos da humanidade.',
+      autores: ['Dan Brown'],
     },
     {
       codigo: 2,
       codEditora: 2,
-      titulo: 'O senhor dos aneis: A sociedade do anel',
-      resumo: 'A Sociedade do Anel começa no Condado, a região rural do oeste da Terra-média onde vivem os diminutos e pacatos hobbits. Bilbo Bolseiro, um dos raros aventureiros desse povo, cujas peripécias foram contadas em O Hobbit, resolve ir embora do Condado e deixa sua considerável herança nas mãos de seu jovem parente Frodo.',
-      autores: ['J.R.R Tolkien'],
+      titulo: 'O Pequeno Príncipe (1943)',
+      resumo: 'Um dos maiores clássicos infantis foi escrito e ilustrado pelo autor Antoine de Saint-Exupéry quando se encontrava exilado na América do Norte durante a II Guerra Mundial. Muito da vida do autor como aviador pode ser identificada no livro.',
+      autores: ['Antoine de Saint-Exupéry'],
     },
     {
       codigo: 3,
       codEditora: 3,
-      titulo: 'Percy Jackson e o ladrão de raios',
-      resumo: 'Percy Jackson é filho de um deus. Ele está para ser expulso do colégio... de novo. Mas, aos doze anos, esse é apenas mais um de seus problemas. Além do transtorno do déficit de atenção e da dislexia, parece que, ultimamente, criaturas fantásticas e deuses do Olimpo saíram dos livros de mitologia grega diretamente para a realidade. E, ao que tudo indica, estão aborrecidos com ele. O raio-mestre de Zeus foi roubado, e é Percy quem deve resgatá-lo. Para restaurar a paz no Olimpo, ele e seus amigos – jovens heróis modernos – precisarão fazer mais que capturar o verdadeiro ladrão: Percy terá de encarar o pai que o abandonou, resolver o enigma do Oráculo e desvendar uma traição mais ameaçadora que a fúria dos deuses.',
-      autores: ['Rick Riordan'],
+      titulo: 'Dom Quixote (1612)',
+      resumo: 'Escrito em uma época em que os romances de cavalaria se encontravam em declínio, Miguel de Cervantes inspirou-se nisto para criar as aventuras de um homem louco que acreditava viver nesse mundo fantástico. Sem dúvidas, uma obra prima.',
+      autores: ['Miguel de Cervantes'],
     }
   ];
-  obterLivros() {
-    return this.livros;
+
+  /* Retorna um objeto do tipo livro com todos os livros da classe */
+  obterLivros(): Observable<Livro[]> {
+    return of(this.livros);
   }
 
-  incluir(receberLivro: Livro) {
-    const maiorCod = this.livros.reduce((esteCod, esteLivro) => {
-      return esteCod > esteLivro.codigo ? esteCod : esteLivro.codigo;
-    }, 0);
+  /* Adiciona livros a classe */
+  incluir(receberLivro: Livro): void {
+    const maiorCod = this.livros.reduce((esteCod, livros) => 
+      Math.max(esteCod, Number(livros.codigo)),
+     0) + 1;
 
-    receberLivro.codigo = maiorCod + 1;
-    this.livros.push(receberLivro);
+    const adicionarLivro = {
+      codigo: maiorCod,
+      codEditora: Number(receberLivro.codEditora),
+      titulo: receberLivro.titulo,
+      resumo: receberLivro.resumo,
+      autores: receberLivro.autores
+    };
+
+    this.livros.push(adicionarLivro);
   }
 
+  /* Remove livros da classe */
   remove(codLivro: number) {
-    const index = this.livros.findIndex(livro => livro.codigo === codLivro);
+    const index = this.livros.findIndex((livro) => livro.codigo === codLivro);
     if (index !== -1) {
       this.livros.splice(index, 1);
     }
   };
-  /*remove(livros: Livro[], livro: Livro) {
-    return livros.filter((a) => livro.codigo !== a.codigo);
-  }*/
-
+  
   constructor() { }
 }

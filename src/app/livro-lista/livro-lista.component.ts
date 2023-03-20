@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ControleEditoraService } from '../controle-editora.service';
 import { ControleLivrosService } from '../controle-livros.service';
 import { Editora } from '../Editora';
@@ -9,30 +10,36 @@ import { Livro } from '../Livro';
   templateUrl: './livro-lista.component.html',
   styleUrls: ['./livro-lista.component.css'],
 })
-export class LivroListaComponent implements OnInit {
-  todosLivros = new ControleLivrosService();
-  todasEditoras = new ControleEditoraService();
+export class LivroListaComponent {
+  public editoras: Array<Editora> = [];
 
-  editoras: Editora[] = this.todasEditoras.getEditoras();
-  livros: Livro[] = this.todosLivros.obterLivros();
-  editoraClass = new ControleEditoraService();
+  public livros: Array<Livro> = [];
 
-  livrosDetails = '';
+  constructor(
+    private servEditora: ControleEditoraService,
+    private servLivros: ControleLivrosService,
+  ) {}
 
-  constructor() {}
+  ngOnInit(): void {
+    this.servEditora.getEditoras().subscribe((editoras) => {
+      this.editoras = editoras;
+    });
 
-  showLivros(livro: Livro): void {
-    this.livrosDetails = `${livro.titulo}, ${livro.resumo}, ${livro.codEditora}, ${livro.autores}`;
+    this.servLivros.obterLivros().subscribe((livros) => {
+      this.livros = livros;
+    });
   }
 
-  removeLivro(codigo: number) {
-    this.todosLivros.remove(codigo);
-  }
+  remover = (codigo: number) => {
+    this.servLivros.remove(codigo);
+    this.servLivros.obterLivros().subscribe((livros) => {
+      this.livros = livros;
+    });
+  };
 
-  consultaEditora(codigo: number) {
-    const retorno: Editora[] = this.editoraClass.getNomeEditora(codigo);
-    return retorno[0].nome;
-  }
-
-  ngOnInit(): void {}
+  buscaNomeEditora = (codEditora: number) => {
+    return this.servEditora.buscaNomeEditora(codEditora).map((editoraNome) => {
+      return editoraNome.nome;
+    });
+  };
 }

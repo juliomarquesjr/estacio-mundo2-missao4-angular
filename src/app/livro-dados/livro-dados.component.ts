@@ -1,41 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { ControleEditoraService } from '../controle-editora.service';
+import { ControleLivrosService } from '../controle-livros.service';
 import { Editora } from '../Editora';
 import { Livro } from '../Livro';
-import { LivroListaComponent } from '../livro-lista/livro-lista.component';
-
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-livro-dados',
   templateUrl: './livro-dados.component.html',
   styleUrls: ['./livro-dados.component.css'],
 })
-export class LivroDadosComponent implements OnInit {
-  autoresForm: string = '';
-  editoras: Array<Editora> = [];
+export class LivroDadosComponent {
+  public livro: Livro = new Livro(0, 0, '', '', ['']);
+  public autoresForm: string = '';
+  public editoras: Array<Editora> = [];
 
-  constructor(private router: Router) {}
-
-  incluir(livro: Livro): void {
-    this.autoresForm = `${livro.titulo}, ${livro.resumo}, ${livro.codEditora}, ${livro.autores}`;
-  }
-
-  /* Em desenvolvimento */
-  adicionarLivro() {
-    const novoLivro: Livro = {
-      titulo: 'Teste',
-      resumo: 'Resumo',
-      codEditora: 1,
-      codigo: 20,
-      autores: ['Julio'],
-    };
-    
-    this.router.navigate(['/lista'])
-  }
-  /* Em desenvolvimento */
+  constructor(
+    private servEditora: ControleEditoraService,
+    private servLivros: ControleLivrosService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.editoras = new ControleEditoraService().getEditoras();
+    this.servEditora.getEditoras().subscribe((editoras) => {
+      this.editoras = editoras;
+    });
   }
+
+  /* Adicionar livro ao acervo */
+  addLivro = () => {
+    this.livro.autores = this.autoresForm.replace(',', '\n').split('\n');
+    console.log(this.autoresForm);
+    this.servLivros.incluir(this.livro);
+    this.router.navigateByUrl('/lista');
+  };
 }
