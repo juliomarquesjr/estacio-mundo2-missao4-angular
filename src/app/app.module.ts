@@ -10,17 +10,9 @@ import { ControleLivrosService } from './controle-livros.service';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LivroListaComponent,
-    LivroDadosComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule
-  ],
+  declarations: [AppComponent, LivroListaComponent, LivroDadosComponent],
+  imports: [BrowserModule, AppRoutingModule, FormsModule],
   providers: [ControleEditoraService, ControleLivrosService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
